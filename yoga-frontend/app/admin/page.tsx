@@ -127,7 +127,6 @@ export default function AdminPage() {
     localStorage.removeItem("eiy_admin_token");
     localStorage.removeItem("eiy_admin_login_time");
     setIsAuthenticated(false);
-    setAuthStep("credentials");
   }
 
   async function fetchDashboardData() {
