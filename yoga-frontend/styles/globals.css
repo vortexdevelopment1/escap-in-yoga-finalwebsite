@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  /* Expand content width and reduce side empty margins across all pages */
+  .max-w-7xl {
+    max-width: 90rem !important; /* expands container to ~1440px */
+  }
+  .max-w-6xl {
+    max-width: 82rem !important;
+  }
+  
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none !important;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none !important;  /* IE and Edge */
+    scrollbar-width: none !important;  /* Firefox */
+  }
+}
+
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+body { background: #F7F4EB; color: #344C3D; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+:focus-visible { outline: 2px solid #879B80; outline-offset: 3px; border-radius: 6px; }
+
+h1, h2, h3, h4, h5, h6 { color: #344C3D; }
+
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease-out, transform .7s ease-out; transition-delay: var(--d, 0ms); }
+.reveal.is-visible { opacity: 1; transform: none; }
+.img-zoom img { transition: transform .8s cubic-bezier(.2,.7,.2,1); }
+.img-zoom:hover img { transform: scale(1.05); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .img-zoom:hover img { transform: none; }
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

@@ -1,0 +1,14 @@
+export { default as AboutSection } from "./AboutSection";
+export { default as BenefitsSection } from "./BenefitsSection";
+export { default as ContactForm } from "./ContactForm";
+export { default as ContactSection } from "./ContactSection";
+export { default as CTABanner } from "./CTABanner";
+export { default as Hero } from "./Hero";
+export { default as HowItWorks } from "./HowItWorks";
+export { default as JourneySection } from "./JourneySection";
+export { default as TrainerSection } from "./TrainerSection";
+export { default as SuccessMetrics } from "./SuccessMetrics";
+export { default as USPSection } from "./USPSection";
+export { default as TestimonialsSection } from "./TestimonialsSection";
+export { default as FAQSection } from "./FAQSection";
+export { default as ClassesSection } from "./ClassesSection";
