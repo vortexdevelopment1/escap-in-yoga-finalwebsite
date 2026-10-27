@@ -12,34 +12,43 @@ export default function Hero() {
       <LeafBranchArt className="absolute pointer-events-none text-sage/25 -scale-x-100 right-4 bottom-20 h-80 w-80 hidden lg:block" />
 
       {/* 1. HERO IMAGE WRAPPER
-          - Below 1024px (Mobile & Tablet):
-              * min-height: calc(100svh - 64px) on mobile, calc(100svh - 80px) on tablet
-              * display: flex; align-items: center; justify-content: center; position: relative
+          - Mobile & Tablet: Full viewport height hero (min-h-[calc(100svh-64px)] / min-h-[calc(100svh-80px)])
+          - Balanced vertical spacing with image centered and CTA buttons right below it inside the full screen
           - Desktop (>= 1024px): 100% original pixel-identical layout
       */}
-      <div className="relative w-full flex flex-col justify-between items-center min-h-[calc(100svh-64px)] md:min-h-[calc(100svh-80px)] lg:min-h-0">
-        <Reveal delay={0} className="relative z-10 w-full flex-1 flex items-center justify-center max-w-6xl px-4 py-4 md:py-6 lg:py-0 lg:pt-4 lg:pb-10">
-          {/* Leaf Line Art for Mobile & Tablet (positioned on top with z-20 so it never gets hidden) */}
+      <div className="relative w-full flex flex-col justify-between items-center min-h-[calc(100svh-64px)] md:min-h-[calc(100svh-80px)] lg:min-h-0 pt-2 sm:pt-4 lg:pt-0">
+        <Reveal delay={0} className="relative z-10 w-full flex-1 flex flex-col items-center justify-center max-w-6xl px-4 py-6 md:py-8 lg:py-0 lg:pt-4 lg:pb-10">
+          {/* Leaf Line Art for Mobile & Tablet */}
           <LeafBranchArt className="hidden min-[360px]:block lg:hidden absolute pointer-events-none text-forest/25 z-20 left-[-4px] md:left-2 top-1/2 -translate-y-1/2 w-[75px] md:w-[130px] h-auto" />
           <LeafBranchArt className="hidden min-[360px]:block lg:hidden absolute pointer-events-none text-sage/40 z-20 -scale-x-100 right-[-4px] md:right-2 top-1/2 -translate-y-1/2 w-[75px] md:w-[130px] h-auto" />
 
-          {/* Clean, fluid image without distortion or box (Matching exact softcream background) */}
+          {/* Clean, fluid image without distortion or box */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="https://res.cloudinary.com/l44x18ko/image/upload/f_auto,q_auto/escape_in_yoga/hero-custom.png"
             alt="Escape in Yoga Visual"
-            className="relative z-10 w-full max-w-[480px] max-h-[65svh] md:w-[92%] md:max-w-[760px] md:max-h-[65svh] lg:w-full lg:max-w-none h-auto lg:max-h-[72vh] object-contain mx-auto pointer-events-none select-none"
+            className="relative z-10 w-full max-w-[480px] max-h-[58svh] md:w-[92%] md:max-w-[760px] md:max-h-[62svh] lg:w-full lg:max-w-none h-auto lg:max-h-[72vh] object-contain mx-auto pointer-events-none select-none"
           />
+
+          {/* MOBILE / TABLET DIRECT CTAs: Balanced inside the full viewport */}
+          <div className="flex lg:hidden flex-row gap-3 w-full max-w-xs sm:max-w-sm mt-6 sm:mt-8 px-2 justify-center z-20">
+            <Button href="/booking?plan=trial" size="lg" className="flex-1 text-center justify-center py-3 text-xs sm:text-sm font-semibold shadow-sm">
+              Book a session
+            </Button>
+            <Button href="/contact" variant="secondary" size="lg" className="flex-1 text-center justify-center py-3 text-xs sm:text-sm font-semibold">
+              Contact
+            </Button>
+          </div>
         </Reveal>
 
-        {/* Divider line stays at the bottom of the wrapper */}
+        {/* Divider line stays at the bottom edge of the screen */}
         <div className="relative z-10 w-full max-w-7xl px-5 md:px-12 lg:px-8">
           <hr className="border-t border-forest/15" />
         </div>
       </div>
 
-      {/* 2. HERO TEXT CONTENT - Completely intact, starting right after the image wrapper */}
-      <div className="mx-auto max-w-7xl px-5 pt-10 sm:px-8 sm:pt-12">
+      {/* 2. HERO TEXT CONTENT - Completely intact */}
+      <div className="mx-auto max-w-7xl px-5 pt-8 sm:pt-10 sm:px-8 sm:pt-12">
         <div className="grid gap-8 items-center lg:grid-cols-[1.1fr_0.9fr] lg:gap-12">
           {/* Left Column: Eyebrow, Main Headline & Description */}
           <Reveal delay={150}>
@@ -58,7 +67,7 @@ export default function Hero() {
 
           {/* Right Column: Action Buttons & 30-Day Journey Card */}
           <Reveal delay={250} className="flex flex-col gap-6 lg:items-end">
-            <div className="flex flex-col sm:flex-row gap-3.5 w-full sm:w-auto">
+            <div className="hidden lg:flex flex-row gap-3.5 w-auto">
               <Button href="/booking?plan=trial" size="lg">Book Free Trial (₹0)</Button>
               <Button href="/booking?plan=cohort" variant="secondary" size="lg">Join 30-Day Cohort</Button>
             </div>

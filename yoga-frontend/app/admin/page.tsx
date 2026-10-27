@@ -106,9 +106,15 @@ export default function AdminPage() {
       // Backend offline fallback check
     }
 
-    // Configurable credentials match (vortex@gmail.com)
-    const allowedAdminEmail = "vortex@gmail.com";
-    const currentAdminPass = "YogaAdmin@2026";
+    // Configurable credentials strictly via Environment Variables (zero hardcoding)
+    const allowedAdminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL?.toLowerCase().trim();
+    const currentAdminPass = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
+
+    if (!allowedAdminEmail || !currentAdminPass) {
+      setLoading(false);
+      setLoginError("Admin credentials are not configured in environment variables.");
+      return;
+    }
 
     if (cleanEmail === allowedAdminEmail && cleanPassword === currentAdminPass) {
       localStorage.setItem("eiy_admin_token", "admin-auth-token-escapeinyoga-2026");
