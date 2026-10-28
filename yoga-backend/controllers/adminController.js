@@ -3,8 +3,8 @@ const Booking = require('../models/Booking');
 const Subscription = require('../models/Subscription');
 const Telemetry = require('../models/Telemetry');
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'vortex@gmail.com';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'YogaAdmin@2026';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const JWT_SECRET = process.env.JWT_SECRET || 'escape-in-yoga-super-secret-key-2026';
 
 // @desc    Admin Login with Signed JWT

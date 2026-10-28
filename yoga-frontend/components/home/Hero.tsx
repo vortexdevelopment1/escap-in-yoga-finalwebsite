@@ -12,30 +12,37 @@ export default function Hero() {
       <LeafBranchArt className="absolute pointer-events-none text-sage/25 -scale-x-100 right-4 bottom-20 h-80 w-80 hidden lg:block" />
 
       {/* 1. HERO IMAGE WRAPPER
-          - Mobile & Tablet: Full viewport height hero (min-h-[calc(100svh-64px)] / min-h-[calc(100svh-80px)])
-          - Balanced vertical spacing with image centered and CTA buttons right below it inside the full screen
+          - Mobile & Tablet: Full viewport height hero, balanced layout without empty emptiness
           - Desktop (>= 1024px): 100% original pixel-identical layout
       */}
       <div className="relative w-full flex flex-col justify-between items-center min-h-[calc(100svh-64px)] md:min-h-[calc(100svh-80px)] lg:min-h-0 pt-2 sm:pt-4 lg:pt-0">
-        <Reveal delay={0} className="relative z-10 w-full flex-1 flex flex-col items-center justify-center max-w-6xl px-4 py-6 md:py-8 lg:py-0 lg:pt-4 lg:pb-10">
+        <Reveal delay={0} className="relative z-10 w-full flex-1 flex flex-col items-center justify-center max-w-6xl px-4 py-4 sm:py-6 lg:py-0 lg:pt-4 lg:pb-10">
           {/* Leaf Line Art for Mobile & Tablet */}
-          <LeafBranchArt className="hidden min-[360px]:block lg:hidden absolute pointer-events-none text-forest/25 z-20 left-[-4px] md:left-2 top-1/2 -translate-y-1/2 w-[75px] md:w-[130px] h-auto" />
-          <LeafBranchArt className="hidden min-[360px]:block lg:hidden absolute pointer-events-none text-sage/40 z-20 -scale-x-100 right-[-4px] md:right-2 top-1/2 -translate-y-1/2 w-[75px] md:w-[130px] h-auto" />
+          <LeafBranchArt className="hidden min-[360px]:block lg:hidden absolute pointer-events-none text-forest/20 z-20 left-[-6px] md:left-2 top-[42%] -translate-y-1/2 w-[70px] md:w-[130px] h-auto" />
+          <LeafBranchArt className="hidden min-[360px]:block lg:hidden absolute pointer-events-none text-sage/35 z-20 -scale-x-100 right-[-6px] md:right-2 top-[42%] -translate-y-1/2 w-[70px] md:w-[130px] h-auto" />
 
           {/* Clean, fluid image without distortion or box */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="https://res.cloudinary.com/l44x18ko/image/upload/f_auto,q_auto/escape_in_yoga/hero-custom.png"
             alt="Escape in Yoga Visual"
-            className="relative z-10 w-full max-w-[480px] max-h-[58svh] md:w-[92%] md:max-w-[760px] md:max-h-[62svh] lg:w-full lg:max-w-none h-auto lg:max-h-[72vh] object-contain mx-auto pointer-events-none select-none"
+            className="relative z-10 w-full max-w-[420px] max-h-[50svh] sm:max-h-[54svh] md:w-[92%] md:max-w-[720px] md:max-h-[60svh] lg:w-full lg:max-w-none h-auto lg:max-h-[72vh] object-contain mx-auto pointer-events-none select-none"
           />
 
+          {/* Classy Poetic Tagline for Mobile to give context & eliminate empty emptiness */}
+          <div className="block lg:hidden text-center mt-3 sm:mt-4 max-w-xs px-2 z-20">
+            <p className="font-serif text-lg sm:text-xl text-forest tracking-tight leading-snug">
+              Find your stillness,
+              <span className="italic text-sage ml-1.5 font-normal">one breath at a time.</span>
+            </p>
+          </div>
+
           {/* MOBILE / TABLET DIRECT CTAs: Balanced inside the full viewport */}
-          <div className="flex lg:hidden flex-row gap-3 w-full max-w-xs sm:max-w-sm mt-6 sm:mt-8 px-2 justify-center z-20">
-            <Button href="/booking?plan=trial" size="lg" className="flex-1 text-center justify-center py-3 text-xs sm:text-sm font-semibold shadow-sm">
+          <div className="flex lg:hidden flex-row gap-3 w-full max-w-xs sm:max-w-sm mt-4 sm:mt-5 px-2 justify-center z-20">
+            <Button href="/booking?plan=trial" size="lg" className="flex-1 text-center justify-center py-2.5 sm:py-3 text-xs sm:text-sm font-semibold shadow-xs">
               Book a session
             </Button>
-            <Button href="/contact" variant="secondary" size="lg" className="flex-1 text-center justify-center py-3 text-xs sm:text-sm font-semibold">
+            <Button href="/contact" variant="secondary" size="lg" className="flex-1 text-center justify-center py-2.5 sm:py-3 text-xs sm:text-sm font-semibold">
               Contact
             </Button>
           </div>

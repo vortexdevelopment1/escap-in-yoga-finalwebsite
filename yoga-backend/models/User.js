@@ -27,6 +27,19 @@ const userSchema = new mongoose.Schema({
     enum: ['member', 'admin'],
     default: 'member',
   },
+  password: {
+    type: String,
+    required: false,
+    default: '',
+  },
+  resetOtp: {
+    type: String,
+    default: null,
+  },
+  resetOtpExpires: {
+    type: Date,
+    default: null,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

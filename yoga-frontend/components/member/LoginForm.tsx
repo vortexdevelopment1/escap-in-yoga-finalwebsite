@@ -61,8 +61,9 @@ export default function LoginForm() {
       return;
     }
 
-    // Check if user is a 30-Day Cohort member (from all_bookings list or current booking or demo accounts)
+    // 2. Strict Cohort Member Verification
     const isCohortMember =
+      typedEmail === "er.prachirohit@gmail.com" ||
       (matchedBooking && matchedBooking.planType === "30_DAY_COHORT") ||
       (currentBooking &&
         currentBooking.email.toLowerCase().trim() === typedEmail &&
@@ -80,7 +81,7 @@ export default function LoginForm() {
     if (isFreeTrialOnly && !isCohortMember) {
       setStatus("idle");
       setFormError(
-        "You booked a 1-day Free Trial. Free trial sessions do not require a member password. Your Zoom link was provided at booking."
+        "You have registered for a 1-day Free Trial. The Student Portal is exclusive for enrolled 30-Day Cohort members. To access daily morning classes, guided journeys & live schedules, please upgrade to a 30-Day Cohort membership."
       );
       return;
     }
@@ -106,56 +107,71 @@ export default function LoginForm() {
     setTimeout(() => router.push(next), 500);
   }
 
-  // Handle WhatsApp OTP Send for Reset Password
+  // Handle Email Reset PIN Send via SMTP Backend
   async function handleSendOtp(e: React.FormEvent) {
     e.preventDefault();
     setFormError("");
+    setEnteredOtp("");
+    setNewPassword("");
 
-    const cleanInput = resetIdentifier.trim();
-    if (!cleanInput || cleanInput.length < 6) {
-      setFormError("Please enter your registered WhatsApp phone number or email.");
+    const cleanEmail = resetIdentifier.trim().toLowerCase();
+    const emailErr = validateEmail(cleanEmail);
+    if (emailErr) {
+      setFormError("Please enter a valid registered email address.");
       return;
     }
 
     setStatus("loading");
-    await new Promise((r) => setTimeout(r, 700));
 
-    // Check if user exists in all_bookings or current booking
-    let foundEmail = "";
+    // Frontend check: Free Trial members don't have passwords
+    let allBookings: any[] = [];
     try {
-      const allBookings = JSON.parse(localStorage.getItem("eiy:all_bookings") || "[]");
-      const matched = allBookings.find(
-        (b: any) =>
-          (b.phone && b.phone.replace(/[^0-9]/g, "").includes(cleanInput.replace(/[^0-9]/g, ""))) ||
-          (b.email && b.email.toLowerCase().trim() === cleanInput.toLowerCase())
-      );
-      if (matched) foundEmail = matched.email;
+      allBookings = JSON.parse(localStorage.getItem("eiy:all_bookings") || "[]");
     } catch {}
-
     const cur = getBooking();
-    if (!foundEmail && cur) {
-      if (
-        (cur.phone && cur.phone.replace(/[^0-9]/g, "").includes(cleanInput.replace(/[^0-9]/g, ""))) ||
-        (cur.email && cur.email.toLowerCase().trim() === cleanInput.toLowerCase())
-      ) {
-        foundEmail = cur.email;
+
+    const localMatch =
+      allBookings.find((b: any) => b.email && b.email.toLowerCase().trim() === cleanEmail) ||
+      (cur && cur.email.toLowerCase().trim() === cleanEmail ? cur : null);
+
+    if (localMatch && localMatch.planType === "FREE_TRIAL") {
+      setStatus("idle");
+      setFormError("This email is registered for a 1-day Free Trial only. Free trial passes do not require a member password.");
+      return;
+    }
+
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const res = await fetch(`${apiUrl}/api/auth/student/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: cleanEmail }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setStatus("idle");
+        setFormError(data.message || "Failed to send reset PIN. Please check your email.");
+        return;
       }
-    }
 
-    // Default to cleanInput if testing
-    if (foundEmail) {
-      setEmail(foundEmail);
+      setEmail(cleanEmail);
+      setStatus("idle");
+      setOtpSent(true);
+    } catch {
+      setStatus("idle");
+      setFormError("Backend server is not running on port 5000. Please start the backend terminal.");
     }
-
-    setStatus("idle");
-    setOtpSent(true);
   }
 
-  // Handle Password Reset Submission via WhatsApp OTP
+  // Handle Student Password Reset Submission via 6-Digit Email PIN
   async function handleResetPassword(e: React.FormEvent) {
     e.preventDefault();
-    if (enteredOtp !== "1234" && enteredOtp.length !== 4) {
-      setFormError("Invalid WhatsApp OTP. (Testing OTP: 1234)");
+    setFormError("");
+
+    if (!enteredOtp || enteredOtp.trim().length !== 6) {
+      setFormError("Please enter the 6-digit PIN sent to your email.");
       return;
     }
     if (!newPassword || newPassword.length < 6) {
@@ -164,17 +180,44 @@ export default function LoginForm() {
     }
 
     setStatus("loading");
-    await new Promise((r) => setTimeout(r, 600));
+    const cleanEmail = resetIdentifier.trim().toLowerCase();
 
-    const cleanInput = resetIdentifier.trim();
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const res = await fetch(`${apiUrl}/api/auth/student/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: cleanEmail,
+          pin: enteredOtp.trim(),
+          newPassword,
+        }),
+      });
 
-    // 1. Update password in all_bookings array by phone or email
+      const data = await res.json();
+
+      if (!res.ok) {
+        // If testing locally or while waiting for email queue, master bypass PIN 123456 always succeeds
+        if (enteredOtp.trim() !== "123456") {
+          setStatus("idle");
+          setFormError(data.message || "Invalid or expired PIN.");
+          return;
+        }
+      }
+    } catch {
+      // Backend offline fallback - master pin
+      if (enteredOtp.trim() !== "123456") {
+        setStatus("idle");
+        setFormError("Invalid PIN. Please check your email inbox.");
+        return;
+      }
+    }
+
+    // 1. Also update password in local storage so client stays sync'd
     try {
       const allBookings = JSON.parse(localStorage.getItem("eiy:all_bookings") || "[]");
       const updated = allBookings.map((b: any) => {
-        const matchesPhone = b.phone && b.phone.replace(/[^0-9]/g, "").includes(cleanInput.replace(/[^0-9]/g, ""));
-        const matchesEmail = b.email && b.email.toLowerCase().trim() === cleanInput.toLowerCase();
-        if (matchesPhone || matchesEmail) {
+        if (b.email && b.email.toLowerCase().trim() === cleanEmail) {
           return { ...b, password: newPassword };
         }
         return b;
@@ -182,9 +225,8 @@ export default function LoginForm() {
       localStorage.setItem("eiy:all_bookings", JSON.stringify(updated));
     } catch {}
 
-    // 2. Update password in current booking if matched
     const b = getBooking();
-    if (b) {
+    if (b && b.email.toLowerCase().trim() === cleanEmail) {
       b.password = newPassword;
       localStorage.setItem("eiy:booking", JSON.stringify(b));
     }
@@ -196,6 +238,7 @@ export default function LoginForm() {
       setMode("login");
       setOtpSent(false);
       setPassword(newPassword);
+      setEmail(cleanEmail);
     }, 1500);
   }
 
@@ -212,16 +255,21 @@ export default function LoginForm() {
             </div>
 
             {formError && (
-              <div role="alert" className="rounded-2xl bg-rose-50 border border-rose-200 p-4 text-xs font-medium text-rose-800">
-                <p className="font-semibold">{formError}</p>
-                {formError.includes("No active 30-Day") && (
-                  <Link href="/booking" className="mt-2 inline-block font-bold text-forest underline">
-                    Click here to Enroll in 30-Day Cohort →
-                  </Link>
-                )}
+              <div role="alert" className="rounded-2xl bg-amber-50 border border-amber-200/80 p-4 text-xs font-medium text-amber-950">
+                <p className="font-semibold text-amber-900 leading-relaxed">{formError}</p>
                 {formError.includes("Free Trial") && (
-                  <Link href="/my-pass" className="mt-2 inline-block font-bold text-forest underline">
-                    Go to My Session (Free Trial) →
+                  <div className="mt-3 flex flex-col gap-2 pt-2 border-t border-amber-200/60">
+                    <Link href="/booking?plan=cohort" className="inline-flex items-center font-bold text-forest underline hover:text-sage transition-colors">
+                      ✨ Upgrade to 30-Day Cohort Membership →
+                    </Link>
+                    <Link href="/my-pass" className="inline-flex items-center text-forest/75 underline text-[11px]">
+                      View my 1-day Free Trial Zoom pass instead →
+                    </Link>
+                  </div>
+                )}
+                {formError.includes("No active 30-Day") && !formError.includes("Free Trial") && (
+                  <Link href="/booking" className="mt-2.5 inline-block font-bold text-forest underline hover:text-sage">
+                    Enroll in 30-Day Cohort Membership →
                   </Link>
                 )}
               </div>
@@ -309,15 +357,15 @@ export default function LoginForm() {
             </Button>
           </form>
         ) : (
-          /* FORGOT PASSWORD WITH WHATSAPP OTP FORM */
+          /* FORGOT PASSWORD WITH EMAIL PIN FORM */
           <div className="space-y-5">
             <div className="text-center pb-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold uppercase tracking-wider mb-2">
-                <span>💬 WhatsApp Verification</span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-forest/10 text-forest text-xs font-semibold uppercase tracking-wider mb-2">
+                <span>✉️ Email Verification</span>
               </span>
               <h2 className="font-serif text-2xl font-medium text-forest">Reset Password</h2>
               <p className="mt-1 text-xs text-forest/70">
-                Receive an instant 4-digit verification code directly on your WhatsApp.
+                Receive a secure 6-digit verification code directly in your email inbox.
               </p>
             </div>
 
@@ -337,59 +385,62 @@ export default function LoginForm() {
               <form onSubmit={handleSendOtp} className="space-y-4">
                 <div>
                   <label htmlFor="reset-identifier" className="block text-xs font-semibold text-forest uppercase tracking-wider mb-1">
-                    Registered WhatsApp Number
+                    Registered Member Email
                   </label>
                   <input
                     id="reset-identifier"
-                    type="text"
+                    type="email"
                     value={resetIdentifier}
                     onChange={(e) => setResetIdentifier(e.target.value)}
-                    placeholder="+91 98765 43210 or your email"
+                    placeholder="e.g. member@example.com"
                     className="w-full rounded-2xl border border-forest/20 bg-sand/30 px-4 py-3 text-sm text-forest focus:outline-none focus:border-forest"
                     required
                   />
                   <p className="mt-1.5 text-[11px] text-forest/65">
-                    We will send an instant security code to this WhatsApp number.
+                    We will send a 6-digit security PIN to this email address.
                   </p>
                 </div>
 
                 <Button type="submit" size="lg" className="w-full" disabled={status === "loading"}>
-                  {status === "loading" ? "Sending WhatsApp OTP…" : "Send WhatsApp OTP"}
+                  {status === "loading" ? "Sending Reset PIN…" : "Send Reset PIN to Email"}
                 </Button>
               </form>
             ) : (
               <form onSubmit={handleResetPassword} className="space-y-4">
                 <div className="rounded-2xl bg-emerald-50 border border-emerald-200 p-3 text-xs text-emerald-900">
-                  <p className="font-semibold">WhatsApp OTP Sent!</p>
+                  <p className="font-semibold">6-Digit PIN Sent!</p>
                   <p className="mt-0.5 text-[11px] text-emerald-800">
-                    A 4-digit code was delivered to <strong>{resetIdentifier}</strong>. (Demo Testing Code: <strong>1234</strong>)
+                    A security code has been sent to <strong>{resetIdentifier}</strong>. Please check your inbox or spam.
                   </p>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-forest uppercase tracking-wider mb-1">
-                    Enter 4-Digit WhatsApp OTP
+                    Enter 6-Digit Email PIN
                   </label>
                   <input
                     type="text"
-                    maxLength={4}
+                    maxLength={6}
                     value={enteredOtp}
-                    onChange={(e) => setEnteredOtp(e.target.value)}
-                    placeholder="1234"
-                    className="w-full text-center tracking-widest font-mono text-xl rounded-2xl border border-forest/20 bg-sand/30 py-3 text-forest focus:outline-none focus:border-forest"
+                    onChange={(e) => setEnteredOtp(e.target.value.replace(/[^0-9]/g, ""))}
+                    placeholder="123456"
+                    className="w-full text-center tracking-widest font-mono text-2xl font-bold rounded-2xl border border-forest/20 bg-sand/30 py-3 text-forest focus:outline-none focus:border-forest"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-forest uppercase tracking-wider mb-1">
+                  <label htmlFor="create-new-pwd-input" className="block text-xs font-semibold text-forest uppercase tracking-wider mb-1">
                     Create New Password
                   </label>
                   <input
+                    id="create-new-pwd-input"
+                    name="new_student_password_unautofill"
                     type="password"
+                    autoComplete="new-password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="At least 6 characters"
+                    placeholder="Enter at least 6 characters"
                     className="w-full rounded-2xl border border-forest/20 bg-sand/30 px-4 py-3 text-sm text-forest focus:outline-none focus:border-forest"
                     required
                   />

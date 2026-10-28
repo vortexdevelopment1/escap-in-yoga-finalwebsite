@@ -258,11 +258,11 @@ export default function AdminPage() {
         <div className="w-full max-w-md rounded-3xl bg-white p-8 sm:p-10 border border-forest/15 shadow-xl">
           <div className="text-center">
             <span className="inline-flex items-center rounded-full bg-forest/5 px-3 py-1 text-xs font-semibold text-forest uppercase tracking-wider">
-              Escape in Yoga Admin
+              Escape in Yoga Management
             </span>
-            <h1 className="mt-3 font-serif text-3xl font-medium text-forest">Teacher Portal</h1>
+            <h1 className="mt-3 font-serif text-3xl font-medium text-forest">Admin Portal</h1>
             <p className="mt-2 text-sm text-forest/70">
-              Sign in with your verified credentials to access student telemetry and slot occupancy.
+              Sign in with your verified credentials to access student admissions, batch occupancy and enquiries.
             </p>
           </div>
 
@@ -329,7 +329,7 @@ export default function AdminPage() {
           </form>
 
           <p className="mt-6 text-center text-xs text-forest/50">
-            Secure Teacher Access Portal
+            Secure Admin Access Portal · Escape in Yoga
           </p>
         </div>
       </div>

@@ -8,6 +8,7 @@ const connectDB = require('./config/db');
 const bookingRoutes = require('./routes/bookingRoutes');
 const sessionRoutes = require('./routes/sessionRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 // Initialize Express app
 const app = express();
@@ -23,6 +24,7 @@ app.use(express.json());
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/auth', authRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
