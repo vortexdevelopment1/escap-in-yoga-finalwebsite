@@ -138,7 +138,7 @@ const sendResetPinEmail = async (toEmail, studentName, pin) => {
   try {
     const sendMailPromise = transporter.sendMail(mailOptions);
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('SMTP timeout: connection took longer than 5 seconds (Render network blocked port 587)')), 5000)
+      setTimeout(() => reject(new Error('Email server timed out after 10 seconds. Please check your email or retry.')), 10000)
     );
 
     const info = await Promise.race([sendMailPromise, timeoutPromise]);

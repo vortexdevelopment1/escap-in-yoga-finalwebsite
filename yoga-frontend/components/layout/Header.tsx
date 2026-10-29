@@ -96,6 +96,7 @@ export default function Header() {
           {/* Mobile & Tablet menu toggle (visible on all screens < 1024px) */}
           <button
             type="button"
+            suppressHydrationWarning
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
             aria-label={open ? "Close menu" : "Open menu"}

@@ -78,14 +78,19 @@ exports.studentForgotPassword = async (req, res) => {
       expires: Date.now() + 10 * 60 * 1000, // 10 minutes validity
     };
 
-    // 3. Send real email via SMTP in background (do NOT await, so response is instant and never hangs)
-    sendResetPinEmail(cleanEmail, studentName, pin).catch((err) => {
-      console.warn('Background SMTP warning:', err.message);
-    });
+    // 3. Await email dispatch via Gmail SMTP / HTTPS API
+    const mailResult = await sendResetPinEmail(cleanEmail, studentName, pin);
+
+    if (!mailResult.success) {
+      return res.status(502).json({
+        success: false,
+        message: mailResult.error || 'Failed to deliver PIN to your email. Please verify your email address or try again.',
+      });
+    }
 
     return res.status(200).json({
       success: true,
-      message: `A 6-digit reset PIN has been sent to ${cleanEmail}. Please check your email inbox (and spam folder).`,
+      message: `A 6-digit reset PIN has been successfully delivered to ${cleanEmail}. Please check your email inbox (and spam folder).`,
     });
   } catch (error) {
     console.error('Error in studentForgotPassword:', error);

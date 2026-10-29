@@ -154,11 +154,8 @@ export default function LoginForm() {
 
       if (!res.ok) {
         setStatus("idle");
-        console.warn("Forgot password notice:", data.message);
-        setEmail(cleanEmail);
-        setStatus("idle");
-        setOtpSent(true);
-        return;
+        setFormError(data.message || "Failed to deliver PIN to your email. Please try again.");
+
         return;
       }
 
@@ -168,8 +165,7 @@ export default function LoginForm() {
     } catch {
 
       setStatus("idle");
-      setEmail(cleanEmail);
-      setOtpSent(true);
+
       const isLocal = !process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL.includes("localhost");
       setFormError(isLocal 
         ? "Backend server is not running on port 5000. Please start the backend terminal." 
