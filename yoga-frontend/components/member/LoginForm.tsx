@@ -141,7 +141,7 @@ export default function LoginForm() {
     }
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000").replace(/\/api\/?$/, "");
       const res = await fetch(`${apiUrl}/api/auth/student/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -161,7 +161,10 @@ export default function LoginForm() {
       setOtpSent(true);
     } catch {
       setStatus("idle");
-      setFormError("Backend server is not running on port 5000. Please start the backend terminal.");
+      const isLocal = !process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL.includes("localhost");
+      setFormError(isLocal 
+        ? "Backend server is not running on port 5000. Please start the backend terminal." 
+        : "Backend server is connecting. Please wait a moment and try again.");
     }
   }
 

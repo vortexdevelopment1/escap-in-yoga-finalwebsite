@@ -85,7 +85,8 @@ export default function AdminPage() {
 
     try {
       // 1. Try Backend API login with signed JWT
-      const res = await fetch("http://localhost:5000/api/admin/login", {
+      const apiUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace(/\/api\/?$/, "");
+      const res = await fetch(`${apiUrl}/api/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: cleanEmail, password: cleanPassword }),
@@ -137,7 +138,8 @@ export default function AdminPage() {
 
   async function fetchDashboardData() {
     try {
-      const res = await fetch("http://localhost:5000/api/admin/dashboard");
+      const apiUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace(/\/api\/?$/, "");
+      const res = await fetch(`${apiUrl}/api/admin/dashboard`);
       if (!res.ok) throw new Error("Dashboard fetch failed");
       const data = await res.json();
       if (data.success) {
