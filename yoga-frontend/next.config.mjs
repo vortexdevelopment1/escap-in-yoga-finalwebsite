@@ -14,10 +14,13 @@ const nextConfig = {
     ],
   },
   async rewrites() {
+    const backendDest = process.env.NODE_ENV === "production"
+      ? "https://escap-in-yoga-finalwebsite.onrender.com/api/:path*"
+      : "http://localhost:5000/api/:path*";
     return [
       {
         source: "/api/:path*",
-        destination: "https://escap-in-yoga-finalwebsite.onrender.com/api/:path*",
+        destination: backendDest,
       },
     ];
   },
