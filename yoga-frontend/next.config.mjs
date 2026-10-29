@@ -13,6 +13,14 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "https://escap-in-yoga-finalwebsite.onrender.com/api/:path*",
+      },
+    ];
+  },
 };
-export default nextConfig;
 
+export default nextConfig;
