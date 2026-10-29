@@ -15,21 +15,27 @@ const getTransporter = () => {
     return null;
   }
 
-  pooledTransporter = nodemailer.createTransport({
-    host,
-    port,
-    secure: port === 465,
-    auth: {
-      user,
-      pass,
-    },
-    connectionTimeout: 5000, // 5s connection timeout
-    greetingTimeout: 5000,
-    socketTimeout: 5000,
-    pool: true, // Keep connection hot & alive
-    maxConnections: 5,
-    maxMessages: 100,
-  });
+  const isGmail = (host && host.includes('gmail')) || (user && user.endsWith('@gmail.com'));
+
+  pooledTransporter = nodemailer.createTransport(
+    isGmail
+      ? {
+          service: 'gmail',
+          auth: { user, pass },
+          connectionTimeout: 8000,
+        }
+      : {
+          host,
+          port,
+          secure: port === 465,
+          auth: { user, pass },
+          connectionTimeout: 8000,
+          greetingTimeout: 8000,
+          socketTimeout: 8000,
+          pool: true,
+          maxConnections: 5,
+        }
+  );
 
   return pooledTransporter;
 };
