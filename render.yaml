@@ -29,3 +29,5 @@ services:
         value: lzlantxdmfkmtqzd
       - key: SMTP_FROM
         value: Escape in Yoga <er.prachirohit@gmail.com>
+      - key: BREVO_API_KEY
+        sync: false

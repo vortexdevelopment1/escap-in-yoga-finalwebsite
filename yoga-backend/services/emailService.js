@@ -54,7 +54,9 @@ const sendResetPinEmail = async (toEmail, studentName, pin) => {
   console.log(`⏰ Validity: 10 Minutes`);
   console.log('==================================================\n');
 
-  const senderEmail = process.env.SMTP_FROM || process.env.SMTP_USER || 'er.prachirohit@gmail.com';
+  const rawSender = process.env.SMTP_FROM || process.env.SMTP_USER || 'er.prachirohit@gmail.com';
+  const senderMatch = rawSender.match(/<([^>]+)>/);
+  const senderEmail = senderMatch ? senderMatch[1].trim() : rawSender.trim();
   const brevoApiKey = process.env.BREVO_API_KEY || (process.env.SMTP_PASS && process.env.SMTP_PASS.startsWith('xkeysib-') ? process.env.SMTP_PASS : null);
 
   // 1. If Brevo HTTPS API Key is available, use HTTPS REST API (Port 443 - NEVER blocked by cloud firewalls)
@@ -62,7 +64,7 @@ const sendResetPinEmail = async (toEmail, studentName, pin) => {
     try {
       console.log('🚀 Attempting fast email dispatch via Brevo HTTPS REST API (Port 443)...');
       const brevoController = new AbortController();
-      const brevoTimeout = setTimeout(() => brevoController.abort(), 6000);
+      const brevoTimeout = setTimeout(() => brevoController.abort(), 10000);
 
       const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
