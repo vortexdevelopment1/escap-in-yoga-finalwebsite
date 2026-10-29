@@ -40,8 +40,17 @@ export function buildProfile(session: StoredSession | null, booking: Booking | n
 
   // 3. Fallback for valid student session
   if (session.email) {
+    // Clean name fallback if no direct name in session: remove initials like er./dr./mr./ms.
+    let displayName = session.name;
+    if (!displayName) {
+      let rawPrefix = session.email.split("@")[0];
+      // If starts with title like er., dr., mr., ms., take the actual name part
+      const parts = rawPrefix.split(/[._]/).filter(p => !['er', 'dr', 'mr', 'ms', 'mrs'].includes(p.toLowerCase()));
+      displayName = parts.length > 0 ? parts.join(" ") : rawPrefix.replace(/[._]/g, " ");
+    }
+
     return {
-      name: session.email.split("@")[0].replace(/[._]/g, " "),
+      name: displayName,
       email: session.email,
       phone: "+91 98765 43210",
       className: "30-Day Cohort Journey",

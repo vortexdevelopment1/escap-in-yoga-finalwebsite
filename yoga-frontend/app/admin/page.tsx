@@ -138,8 +138,11 @@ export default function AdminPage() {
 
   async function fetchDashboardData() {
     try {
+      const token = localStorage.getItem("eiy_admin_token");
       const apiUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace(/\/api\/?$/, "");
-      const res = await fetch(`${apiUrl}/api/admin/dashboard`);
+      const res = await fetch(`${apiUrl}/api/admin/dashboard`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       if (!res.ok) throw new Error("Dashboard fetch failed");
       const data = await res.json();
       if (data.success) {

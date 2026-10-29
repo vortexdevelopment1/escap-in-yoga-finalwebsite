@@ -101,7 +101,8 @@ export default function LoginForm() {
     }
 
     // Save verified session
-    saveSession({ email: typedEmail, mode: "booking" });
+    const resolvedName = matchedBooking?.name || currentBooking?.name;
+    saveSession({ email: typedEmail, name: resolvedName, mode: "booking" });
 
     setStatus("success");
     setTimeout(() => router.push(next), 500);

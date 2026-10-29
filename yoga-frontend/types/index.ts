@@ -49,6 +49,7 @@ export interface Booking {
 
 export interface StoredSession {
   email: string;
+  name?: string;
   mode: "demo" | "booking";
 }
 

@@ -145,7 +145,7 @@ export default function BookingFlow() {
 
       // 2. Only 30-Day Cohort members get persistent session access for Member Portal
       if (planType === "30_DAY_COHORT") {
-        saveSession({ email: details.email.trim(), mode: "booking" });
+        saveSession({ email: details.email.trim(), name: details.name.trim(), mode: "booking" });
       }
 
       // 3. Keep local session cache for confirmation card
