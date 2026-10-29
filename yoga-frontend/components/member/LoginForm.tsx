@@ -420,7 +420,7 @@ export default function LoginForm() {
                 <div className="rounded-2xl bg-emerald-50 border border-emerald-200 p-3 text-xs text-emerald-900">
                   <p className="font-semibold">6-Digit PIN Sent!</p>
                   <p className="mt-0.5 text-[11px] text-emerald-800">
-                    A security code has been sent to <strong>{resetIdentifier}</strong>. Check your inbox/spam or use master PIN <strong>123456</strong> if email is delayed.
+                    A security code has been sent to <strong>{resetIdentifier}</strong>. Please check your email inbox (and spam folder).
                   </p>
                 </div>
 
@@ -433,7 +433,7 @@ export default function LoginForm() {
                     maxLength={6}
                     value={enteredOtp}
                     onChange={(e) => setEnteredOtp(e.target.value.replace(/[^0-9]/g, ""))}
-                    placeholder="123456"
+                    placeholder="------"
                     className="w-full text-center tracking-widest font-mono text-2xl font-bold rounded-2xl border border-forest/20 bg-sand/30 py-3 text-forest focus:outline-none focus:border-forest"
                     required
                   />
