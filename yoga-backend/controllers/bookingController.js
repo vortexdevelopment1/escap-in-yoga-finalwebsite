@@ -58,6 +58,8 @@ exports.createBooking = async (req, res) => {
     }
 
     const cleanEmail = email.toLowerCase().trim();
+    // Normalize batch time e.g. "06:00 AM" -> "06:00" to match Mongoose enum ['06:00', '07:00', '08:00']
+    const normalizedBatchTime = batchTime.trim().replace(/\s*[AaPp][Mm]$/, '');
     const isFreeTrial = planType === 'FREE_TRIAL';
 
     // 2. Strict Free Trial Enforcement (Cannot claim if already booked trial OR already enrolled in 30-Day Cohort)
@@ -81,7 +83,7 @@ exports.createBooking = async (req, res) => {
     if (isFreeTrial) {
       const trialSlotCount = await Booking.countDocuments({
         dateISO,
-        batchTime,
+        batchTime: normalizedBatchTime,
         planType: 'FREE_TRIAL',
         status: 'CONFIRMED',
       });
@@ -112,12 +114,12 @@ exports.createBooking = async (req, res) => {
       phone: phone.trim(),
       classSlug,
       className,
-      batchTime,
+      batchTime: normalizedBatchTime,
       dateISO,
       planType: isFreeTrial ? 'FREE_TRIAL' : '30_DAY_COHORT',
       status: 'CONFIRMED',
       // Zoom link placeholder (later connected to Zoom API)
-      zoomMeetingUrl: `https://zoom.us/join?batch=${classSlug}&time=${batchTime.replace(':', '')}`,
+      zoomMeetingUrl: `https://zoom.us/join?batch=${classSlug}&time=${normalizedBatchTime.replace(':', '')}`,
       whatsappNotificationSent: true,
     });
 

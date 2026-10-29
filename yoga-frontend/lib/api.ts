@@ -1,4 +1,6 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+// Normalize API_BASE so it works regardless of trailing slashes or whether /api was included in NEXT_PUBLIC_API_URL
+const rawBase = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000").replace(/\/+$/, "");
+const API_BASE = rawBase.endsWith("/api") ? rawBase : `${rawBase}/api`;
 
 export interface BookingPayload {
   name: string;
