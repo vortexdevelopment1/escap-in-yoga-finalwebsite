@@ -54,8 +54,8 @@ const sendResetPinEmail = async (toEmail, studentName, pin) => {
   console.log(`⏰ Validity: 10 Minutes`);
   console.log('==================================================\n');
 
-  const senderEmail = (brevoApiKey ? (process.env.BREVO_SENDER_EMAIL || 'vortexcubesdevelopment@gmail.com') : (process.env.SMTP_USER || 'vortexcubesdevelopment@gmail.com'));
   const brevoApiKey = process.env.BREVO_API_KEY || (process.env.SMTP_PASS && process.env.SMTP_PASS.startsWith('xkeysib-') ? process.env.SMTP_PASS : null);
+  const senderEmail = (brevoApiKey ? (process.env.BREVO_SENDER_EMAIL || 'vortexcubesdevelopment@gmail.com') : (process.env.SMTP_USER || 'vortexcubesdevelopment@gmail.com'));
 
   // 1. If Brevo HTTPS API Key is available, use HTTPS REST API (Port 443 - NEVER blocked by cloud firewalls)
   if (brevoApiKey) {
